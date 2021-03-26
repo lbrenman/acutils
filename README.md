@@ -27,3 +27,5 @@ After downloading the repo, do the following:
   `./acutils.js`
 
   > Note: You may need to make acutils.js executable using `chmod +x acutils.js`
+
+* You can run `npm link` and run from anywhere using acutils
