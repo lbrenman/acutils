@@ -32,6 +32,7 @@ COMMANDS:
   getenvci                 get a list of catalog items (APIs) for a given environment
   getenvapiservices        get a list of API Services for a given environment
   delenvapiservices        delete all API Services for a given environment
+  getsubs                  get a kist of all subscriptions
   getenvwh                 get a list of webhooks for a given environment
 `
 
@@ -222,6 +223,29 @@ function getEnvironmentWebhooks(options) {
 
 }
 
+function getSubscriptions(options) {
+  // console.log('getSubscription()');
+
+  lib.init(options.clientId, options.clientSecret, options.apiCentralBaseURL, options.orgId, function(e) {
+    if(e.success) {
+      lib.getSubscriptions(function(subscriptions) {
+        if(subscriptions.success) {
+          const eLog = chalk.green('==============\nSubscriptions\n==============')
+          console.log(eLog)
+          subscriptions.data.forEach((item, i) => {
+            console.log(`${item.name} - ${item.state}`);
+          });
+          console.log('\n')
+        } else {
+          console.log('Error retrieving Subscriptions!')
+        }
+      })
+    } else {
+      console.log(tokenErrorMsg)
+    }
+  });
+}
+
 
 ////////////////////////////////////
 // Start here
@@ -254,6 +278,9 @@ switch(args[2]) {
     break
   case 'delenvapiservices':
     delEnvironmentApiServices(options)
+    break
+  case 'getsubs':
+    getSubscriptions(options)
     break
   case 'getenvwh':
     getEnvironmentWebhooks(options)

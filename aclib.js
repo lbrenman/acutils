@@ -15,7 +15,8 @@ module.exports = {
   getEnvironments: getEnvironments,
   getSubscriptions: getSubscriptions,
   getOpenSubscriptions: getOpenSubscriptions,
-  getWebhooksByEnvironment: getWebhooksByEnvironment
+  getWebhooksByEnvironment: getWebhooksByEnvironment,
+  getSubscriptions: getSubscriptions
 }
 
 function consoleLog(str) {
@@ -139,4 +140,8 @@ function getOpenSubscriptions(callback) {
 
 function getWebhooksByEnvironment(envName, callback) {
   makeApiCall('GET',`/apis/management/v1alpha1/environments/${envName}/webhooks`,'getWebhooksByEnvironment()',callback)
+}
+
+function getSubscriptions(callback) {
+  makeApiCall('GET',`/api/unifiedCatalog/v1/subscriptions`,'getSubscriptions()',callback)
 }
