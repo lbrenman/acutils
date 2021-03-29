@@ -34,6 +34,7 @@ COMMANDS:
   delenvapiservices        delete all API Services for a given environment
   getsubs                  get a kist of all subscriptions
   getenvwh                 get a list of webhooks for a given environment
+  updatesubswhurl          update subscription webhook URL
 `
 
   console.log(usageText)
@@ -207,7 +208,7 @@ function getEnvironmentWebhooks(options) {
             const eLog = chalk.green('==============\nWebhooks\n==============')
             console.log(eLog)
             catalogItems.data.forEach((item, i) => {
-              console.log(`${item.name} (${item.spec.url})`);
+              console.log(`name: ${item.name}\nurl: ${item.spec.url}\nheaders:${JSON.stringify(item.spec.headers)}`);
             });
             console.log('\n')
           } else {
@@ -244,6 +245,33 @@ function getSubscriptions(options) {
       console.log(tokenErrorMsg)
     }
   });
+}
+
+function updateSubscriptionWebhookURL(options) {
+  // console.log('updateSubscriptionWebhookURL()');
+
+  getUserInput('Name of Environment to update Subscription Webhook for? ', function(answerEnv) {
+
+    getUserInput('Enter new URL ', function(answerUrl) {
+
+      lib.init(options.clientId, options.clientSecret, options.apiCentralBaseURL, options.orgId, function(e) {
+        if(e.success) {
+          lib.updateSubscriptionWebhookURL(answerEnv, answerUrl, function(updateResponse) {
+            if(updateResponse.success) {
+              console.log('Susbcription Webhook URL successfully updated!');
+            } else {
+              console.log('Error updating susbscription webhook url')
+            }
+          })
+        } else {
+          console.log(tokenErrorMsg)
+        }
+    });
+
+    });
+
+  });
+
 }
 
 
@@ -284,6 +312,9 @@ switch(args[2]) {
     break
   case 'getenvwh':
     getEnvironmentWebhooks(options)
+    break
+  case 'updatesubswhurl':
+    updateSubscriptionWebhookURL(options)
     break
   default:
     errorLog('Invalid command or no command passed')

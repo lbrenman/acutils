@@ -16,7 +16,8 @@ module.exports = {
   getSubscriptions: getSubscriptions,
   getOpenSubscriptions: getOpenSubscriptions,
   getWebhooksByEnvironment: getWebhooksByEnvironment,
-  getSubscriptions: getSubscriptions
+  getSubscriptions: getSubscriptions,
+  updateSubscriptionWebhookURL: updateSubscriptionWebhookURL
 }
 
 function consoleLog(str) {
@@ -100,48 +101,72 @@ function checkInitCalled(initCalled, callback) {
   }
 }
 
-function makeApiCall(verb, path, name, callback) {
-  consoleLog(name)
-
-  consoleLog(path)
+function makeApiCall(verb, data, path, name, callback) {
+  // consoleLog(name)
+  // consoleLog(path)
 
   if(checkInitCalled(initCalled, callback)) {
-    callAxios(getAxiosOptions(verb, _apiCentralBaseURL + path, _accessToken, _orgId), callback);
+    let options = getAxiosOptions(verb, _apiCentralBaseURL + path, _accessToken, _orgId);
+    if(verb === 'POST' || verb === 'PUT') {
+      options.data = data;
+    }
+    callAxios(options, callback);
   }
 }
 
 function getCatalogItems(callback) {
-  makeApiCall('GET',`/api/unifiedCatalog/v1/catalogItems`,'getCatalogItems()',callback)
+  makeApiCall('GET', {}, `/api/unifiedCatalog/v1/catalogItems`,'getCatalogItems()',callback)
 }
 
 function getCatalogItemsForEnvironmentName(envName, callback) {
-  makeApiCall('GET',`/api/unifiedCatalog/v1/catalogItems/?query=relationships.type==API_SERVER_ENVIRONMENT_NAME;relationships.value==${envName}`,'getCatalogItemsForEnvironmentName()',callback)
+  makeApiCall('GET', {}, `/api/unifiedCatalog/v1/catalogItems/?query=relationships.type==API_SERVER_ENVIRONMENT_NAME;relationships.value==${envName}`,'getCatalogItemsForEnvironmentName()',callback)
 }
 
 function getApiServicesForEnvironmentName(envName, callback) {
-  makeApiCall('GET',`/apis/management/v1alpha1/environments/${envName}/apiservices`,'getApiServicesForEnvironmentName()',callback)
+  makeApiCall('GET', {}, `/apis/management/v1alpha1/environments/${envName}/apiservices`,'getApiServicesForEnvironmentName()',callback)
 }
 
 function delApiServicesForEnvironmentName(envName, serviceName, callback) {
-  makeApiCall('DELETE',`/apis/management/v1alpha1/environments/${envName}/apiservices/${serviceName}`,'getApiServicesForEnvironmentName()',callback)
+  makeApiCall('DELETE', {}, `/apis/management/v1alpha1/environments/${envName}/apiservices/${serviceName}`,'getApiServicesForEnvironmentName()',callback)
 }
 
 function getEnvironments(callback) {
-  makeApiCall('GET',`/apis/management/v1alpha1/environments`,'getEnvironments()',callback)
+  makeApiCall('GET', {}, `/apis/management/v1alpha1/environments`,'getEnvironments()',callback)
 }
 
 function getSubscriptions(callback) {
-  makeApiCall('GET',`/api/unifiedCatalog/v1/subscriptions`,'getSubscriptions()',callback)
+  makeApiCall('GET', {}, `/api/unifiedCatalog/v1/subscriptions`,'getSubscriptions()',callback)
 }
 
 function getOpenSubscriptions(callback) {
-  makeApiCall('GET',`/api/unifiedCatalog/v1/subscriptions?query=state==REQUESTED`,'getOpenSubscriptions()',callback)
+  makeApiCall('GET', {}, `/api/unifiedCatalog/v1/subscriptions?query=state==REQUESTED`,'getOpenSubscriptions()',callback)
 }
 
 function getWebhooksByEnvironment(envName, callback) {
-  makeApiCall('GET',`/apis/management/v1alpha1/environments/${envName}/webhooks`,'getWebhooksByEnvironment()',callback)
+  makeApiCall('GET', {}, `/apis/management/v1alpha1/environments/${envName}/webhooks`,'getWebhooksByEnvironment()',callback)
 }
 
 function getSubscriptions(callback) {
-  makeApiCall('GET',`/api/unifiedCatalog/v1/subscriptions`,'getSubscriptions()',callback)
+  makeApiCall('GET', {}, `/api/unifiedCatalog/v1/subscriptions`,'getSubscriptions()',callback)
+}
+
+function updateSubscriptionWebhookURL(envName, url, callback) {
+
+  let data = {
+    "name": "subscriptionwebhook",
+    "title": "subscriptionwebhook",
+    "spec": {
+      "auth": {
+        "secret": {
+          "name": "subscriptionwebhook",
+          "key": "webhookAuthKey"
+        }
+      },
+      "enabled": true,
+      "url": url,
+      "headers": {}
+    }
+  }
+
+  makeApiCall('PUT', data, `/apis/management/v1alpha1/environments/${envName}/webhooks/subscriptionwebhook`,'updateSubscriptionWebhookURL()',callback)
 }
