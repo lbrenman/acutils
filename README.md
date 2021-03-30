@@ -2,6 +2,11 @@
 
 A cli for viewing and modifying Amplify Central resources for your organization.
 
+Besides provide a command line interface to view your environments, api services, catalog items, etc..., it enables you to do the following which cannot currently be done from the UI:
+
+* Remove all API Services from an Environment. This is a common task during POCs and, in the UI, can only be achieved, one API Service at a time.
+* Modify a subscription webhook URL. This is also a common task during POCs and when developing Subscription Flows and can only be achieved by editing the discovery agent YML/ENV files and relaunching the agent
+
 Refer to this [blog post](https://devblog.axway.com/apis/amplify-central-connected-gateway-custom-api-subscription-flow-basics/) for instructions to create an Amplify Central service account and retrieve the clientId and clientSecret required for the cli. You enter this info in an acconfig.js file that you should create in your project folder:
 
 ```javascript
