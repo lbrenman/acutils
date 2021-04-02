@@ -32,7 +32,7 @@ COMMANDS:
   getenvci                 get a list of catalog items (APIs) for a given environment
   getenvapiservices        get a list of API Services for a given environment
   delenvapiservices        delete all API Services for a given environment
-  getsubs                  get a kist of all subscriptions
+  getsubs                  get a list of all subscriptions
   getenvwh                 get a list of webhooks for a given environment
   updatesubswhurl          update subscription webhook URL
 `
